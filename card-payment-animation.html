@@ -34,36 +34,36 @@
     /* shared stroke style */
     .outline {
       fill: none;
-      stroke: #8faac0;
+      stroke: #9ab3c7;
       stroke-width: 3;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
     .outline-thin {
       fill: none;
-      stroke: #b0c8da;
+      stroke: #9ab3c7;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
     .outline-xs {
       fill: none;
-      stroke: #c8dae6;
+      stroke: #b8cdd9;
       stroke-width: 1.5;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
     .fill-white {
-      fill: #fff;
-      stroke: #8faac0;
+      fill: none;
+      stroke: #9ab3c7;
       stroke-width: 3;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
     .fill-light {
-      fill: #f5f9fc;
-      stroke: #8faac0;
-      stroke-width: 3;
+      fill: none;
+      stroke: #9ab3c7;
+      stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -152,14 +152,6 @@
       58%,100% { stroke-dashoffset: 0;  opacity: 0; }
     }
 
-    /* ── Ripple rings ── */
-    .ripple {
-      transform-origin: 170px 285px;
-      animation: rippleOut 5s ease-out infinite;
-      fill: none;
-      stroke: #8faac0;
-      stroke-width: 1.5;
-    }
     .ripple:nth-child(1) { animation-delay: 0s; }
     .ripple:nth-child(2) { animation-delay: .35s; }
     .ripple:nth-child(3) { animation-delay: .7s; }
@@ -174,17 +166,26 @@
       animation: keyBlink 5s ease-in-out infinite;
     }
     @keyframes keyBlink {
-      0%,48%   { stroke: #8faac0; }
+      0%,48%   { stroke: #9ab3c7; }
       55%,65%  { stroke: #5b8faa; }
-      70%,100% { stroke: #8faac0; }
+      70%,100% { stroke: #9ab3c7; }
     }
 
     /* ── status dot blink ── */
     #status-dot {
       animation: dotBlink 1s ease-in-out infinite;
-      fill: #8faac0;
+      fill: #9ab3c7;
     }
     @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+    /* ── Ripple rings ── */
+    .ripple {
+      transform-origin: 170px 285px;
+      animation: rippleOut 5s ease-out infinite;
+      fill: none;
+      stroke: #9ab3c7;
+      stroke-width: 1.5;
+    }
 
     /* ── label ── */
     .label {
@@ -192,7 +193,7 @@
       font-size: 13px;
       font-weight: 500;
       letter-spacing: .5px;
-      color: #8faac0;
+      color: #9ab3c7;
       text-transform: uppercase;
       transition: opacity .4s;
     }
@@ -228,28 +229,29 @@
 
     <!-- slot scan line -->
     <line id="slot-scan" class="outline-thin" x1="122" y1="260" x2="122" y2="260"
-          stroke="#5b8faa" stroke-width="2" stroke-linecap="round"/>
+          stroke="#7aa0b8" stroke-width="2" stroke-linecap="round"/>
 
-    <!-- keypad grid -->
+    <!-- keypad grid
+         POS body: x=105 w=130 → inner x: 118..222 (13px padding each side)
+         3 keys w=28, gap=10 → 118 | 156 | 194, right edge=222 ✓
+         4 rows h=22, gap=8 → y: 274, 304, 334, 364
+    -->
     <!-- row 1 -->
-    <rect class="outline-thin" x="118" y="276" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="152" y="276" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="186" y="276" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="118" y="274" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="156" y="274" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="194" y="274" width="28" height="22" rx="5"/>
     <!-- row 2 -->
     <rect class="outline-thin" x="118" y="304" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="152" y="304" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="186" y="304" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="156" y="304" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="194" y="304" width="28" height="22" rx="5"/>
     <!-- row 3 -->
-    <rect class="outline-thin" x="118" y="332" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="152" y="332" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="186" y="332" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="118" y="334" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="156" y="334" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="194" y="334" width="28" height="22" rx="5"/>
     <!-- row 4: C | 0 | OK -->
-    <rect class="outline-thin" x="118" y="360" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="152" y="360" width="28" height="22" rx="5"/>
-    <rect class="key-ok outline-thin" x="186" y="360" width="28" height="22" rx="5"/>
-
-    <!-- terminal brand line -->
-    <line class="outline-xs" x1="148" y1="370" x2="192" y2="370"/>
+    <rect class="outline-thin" x="118" y="364" width="28" height="22" rx="5"/>
+    <rect class="outline-thin" x="156" y="364" width="28" height="22" rx="5"/>
+    <rect class="key-ok outline-thin" x="194" y="364" width="28" height="22" rx="5"/>
 
 
     <!-- ══════════════════════════════════
@@ -265,23 +267,23 @@
       <line class="outline-xs" x1="122" y1="96" x2="142" y2="96"/>
 
       <!-- card number dots -->
-      <circle class="outline-xs" cx="122" cy="120" r="2" fill="#b0c8da"/>
-      <circle class="outline-xs" cx="129" cy="120" r="2" fill="#b0c8da"/>
-      <circle class="outline-xs" cx="136" cy="120" r="2" fill="#b0c8da"/>
-      <circle class="outline-xs" cx="143" cy="120" r="2" fill="#b0c8da"/>
+      <circle class="outline-xs" cx="122" cy="120" r="2" fill="#b8cdd9"/>
+      <circle class="outline-xs" cx="129" cy="120" r="2" fill="#b8cdd9"/>
+      <circle class="outline-xs" cx="136" cy="120" r="2" fill="#b8cdd9"/>
+      <circle class="outline-xs" cx="143" cy="120" r="2" fill="#b8cdd9"/>
       <line class="outline-xs" x1="148" y1="120" x2="150" y2="120"/>
-      <circle class="outline-xs" cx="155" cy="120" r="2" fill="#b0c8da"/>
-      <circle class="outline-xs" cx="162" cy="120" r="2" fill="#b0c8da"/>
-      <circle class="outline-xs" cx="169" cy="120" r="2" fill="#b0c8da"/>
-      <circle class="outline-xs" cx="176" cy="120" r="2" fill="#b0c8da"/>
+      <circle class="outline-xs" cx="155" cy="120" r="2" fill="#b8cdd9"/>
+      <circle class="outline-xs" cx="162" cy="120" r="2" fill="#b8cdd9"/>
+      <circle class="outline-xs" cx="169" cy="120" r="2" fill="#b8cdd9"/>
+      <circle class="outline-xs" cx="176" cy="120" r="2" fill="#b8cdd9"/>
       <line class="outline-xs" x1="181" y1="120" x2="183" y2="120"/>
-      <text x="188" y="124" font-size="7" fill="#b0c8da" font-family="monospace" letter-spacing="1">4242</text>
+      <text x="188" y="124" font-size="7" fill="#b8cdd9" font-family="monospace" letter-spacing="1">4242</text>
 
       <!-- name line -->
       <line class="outline-xs" x1="122" y1="134" x2="168" y2="134"/>
 
       <!-- NFC arcs -->
-      <g fill="none" stroke="#8faac0" stroke-width="1.8" stroke-linecap="round">
+      <g fill="none" stroke="#9ab3c7" stroke-width="1.8" stroke-linecap="round">
         <path class="nfc-arc" d="M 204 94 A 8 8 0 0 1 204 112"/>
         <path class="nfc-arc" d="M 210 90 A 14 14 0 0 1 210 116"/>
         <path class="nfc-arc" d="M 216 86 A 20 20 0 0 1 216 120"/>
@@ -301,9 +303,9 @@
          SUCCESS CHECKMARK
     ══════════════════════════════════ -->
     <g id="check-circle">
-      <circle class="outline" cx="170" cy="285" r="26" stroke="#5b8faa"/>
+      <circle class="outline" cx="170" cy="285" r="26" stroke="#7aa0b8"/>
       <polyline id="check-path"
-        fill="none" stroke="#5b8faa" stroke-width="3"
+        fill="none" stroke="#7aa0b8" stroke-width="3"
         stroke-linecap="round" stroke-linejoin="round"
         points="158,285 166,293 182,275"/>
     </g>
