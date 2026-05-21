@@ -19,24 +19,32 @@
 
     .scene svg { overflow: visible; display: block; }
 
-    /* ── shared SVG classes ── */
-    .s  { fill: none; stroke: #9ab3c7; stroke-width: 3;   stroke-linecap: round; stroke-linejoin: round; }
-    .sm { fill: none; stroke: #9ab3c7; stroke-width: 2;   stroke-linecap: round; stroke-linejoin: round; }
-    .sx { fill: none; stroke: #b8cdd9; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    /* ── Stark Bank palette ──────────────────────────────────────
+       Blue  #0070e0 → card, slot, tela, NFC, scan, checkmark
+       Gray  #bdc4c9 → corpo POS, teclado, borda tela, chip
+    ──────────────────────────────────────────────────────────── */
 
-    /* ── screen lines draw-on animation ── */
+    /* blue – thick / medium */
+    .sb  { fill: none; stroke: #0070e0; stroke-width: 3;   stroke-linecap: round; stroke-linejoin: round; }
+    .sbm { fill: none; stroke: #0070e0; stroke-width: 2;   stroke-linecap: round; stroke-linejoin: round; }
+
+    /* gray – thick / medium / thin */
+    .sg  { fill: none; stroke: #bdc4c9; stroke-width: 3;   stroke-linecap: round; stroke-linejoin: round; }
+    .sgm { fill: none; stroke: #bdc4c9; stroke-width: 2;   stroke-linecap: round; stroke-linejoin: round; }
+    .sgx { fill: none; stroke: #bdc4c9; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── screen lines (blue, draw-on) ── */
     .sline {
-      stroke: #b8cdd9; stroke-width: 2.5; stroke-linecap: round;
+      stroke: #0070e0; stroke-width: 2.5; stroke-linecap: round;
       fill: none;
-      stroke-dasharray: 80;
-      stroke-dashoffset: 80;
+      stroke-dasharray: 80; stroke-dashoffset: 80;
       transition: stroke-dashoffset 0s;
     }
     .sline.draw { transition: stroke-dashoffset 0.4s cubic-bezier(0.4,0,0.2,1); stroke-dashoffset: 0; }
 
-    /* ── NFC arcs ── */
+    /* ── NFC arcs (blue) ── */
     .narc {
-      fill: none; stroke: #9ab3c7; stroke-width: 2; stroke-linecap: round;
+      fill: none; stroke: #0070e0; stroke-width: 2; stroke-linecap: round;
       stroke-dasharray: 18; stroke-dashoffset: 18;
       transition: stroke-dashoffset 0s, opacity 0s;
       opacity: 0;
@@ -46,35 +54,31 @@
       stroke-dashoffset: 0; opacity: 1;
     }
 
-    /* ── scan line ── */
-    #scan-line {
-      stroke: #7aa0b8; stroke-width: 2; stroke-linecap: round;
-      opacity: 0;
-    }
+    /* ── scan line (blue) ── */
+    #scan-line { stroke: #0070e0; stroke-width: 2; stroke-linecap: round; opacity: 0; }
 
-    /* ── checkmark ── */
+    /* ── checkmark (blue) ── */
     #chk-circle { opacity: 0; transform-origin: 170px 330px; }
     #chk-path {
-      fill: none; stroke: #7aa0b8; stroke-width: 3;
+      fill: none; stroke: #0070e0; stroke-width: 3;
       stroke-linecap: round; stroke-linejoin: round;
       stroke-dasharray: 30; stroke-dashoffset: 30;
     }
 
-    /* ── status dot ── */
-    #dot { fill: #9ab3c7; }
+    /* ── status dot (blue) ── */
+    #dot { fill: #0070e0; }
 
-    /* ── ripples ── */
+    /* ── ripples (blue translúcido) ── */
     .ripple {
-      fill: none; stroke: #9ab3c7; stroke-width: 1.5;
-      transform-origin: 170px 330px;
-      opacity: 0;
+      fill: none; stroke: #0070e0; stroke-width: 1.5;
+      transform-origin: 170px 330px; opacity: 0;
     }
 
-    /* ── label ── */
+    /* ── label (blue) ── */
     .label {
       margin-top: 24px;
       font-size: 12px; font-weight: 500; letter-spacing: .8px;
-      color: #9ab3c7; text-transform: uppercase;
+      color: #0070e0; text-transform: uppercase;
       transition: opacity .35s ease;
     }
   </style>
@@ -92,80 +96,80 @@
   -->
   <svg id="svg" width="340" height="460" viewBox="0 0 340 460">
 
-    <!-- ═══ LAYER 1: POS BACK (behind card) ═══ -->
-    <rect class="s" x="95" y="130" width="150" height="290" rx="22"/>
+    <!-- ═══ LAYER 1: POS BACK — gray (estrutura) ═══ -->
+    <rect class="sg" x="95" y="130" width="150" height="290" rx="22"/>
 
-    <!-- ═══ LAYER 2: CARD (animated over POS back, under POS front) ═══ -->
+    <!-- ═══ LAYER 2: CARD — blue (ação) ═══ -->
     <g id="card-group" style="opacity:0">
-      <!-- card body -->
-      <rect class="s" x="109" y="30" width="122" height="78" rx="10"/>
-      <!-- chip -->
-      <rect class="sm" x="122" y="46" width="22" height="17" rx="3"/>
-      <line class="sx" x1="133" y1="46" x2="133" y2="63"/>
-      <line class="sx" x1="122" y1="54" x2="144" y2="54"/>
-      <!-- masked number dots -->
-      <circle cx="122" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="130" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="138" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="146" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="157" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="165" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="173" cy="84" r="2.5" fill="#b8cdd9"/>
-      <circle cx="181" cy="84" r="2.5" fill="#b8cdd9"/>
-      <!-- last 4 digits -->
-      <text x="191" y="88" font-size="8" fill="#b8cdd9" font-family="monospace" letter-spacing="1">4242</text>
-      <!-- name underline -->
-      <line class="sx" x1="122" y1="100" x2="175" y2="100"/>
-      <!-- NFC arcs (right side of card) -->
+      <!-- card body — blue -->
+      <rect class="sb" x="109" y="30" width="122" height="78" rx="10"/>
+      <!-- chip — gray -->
+      <rect class="sgm" x="122" y="46" width="22" height="17" rx="3"/>
+      <line class="sgx" x1="133" y1="46" x2="133" y2="63"/>
+      <line class="sgx" x1="122" y1="54" x2="144" y2="54"/>
+      <!-- masked number dots — gray -->
+      <circle cx="122" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="130" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="138" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="146" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="157" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="165" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="173" cy="84" r="2.5" fill="#bdc4c9"/>
+      <circle cx="181" cy="84" r="2.5" fill="#bdc4c9"/>
+      <!-- last 4 digits — gray -->
+      <text x="191" y="88" font-size="8" fill="#bdc4c9" font-family="monospace" letter-spacing="1">4242</text>
+      <!-- name underline — gray -->
+      <line class="sgx" x1="122" y1="100" x2="175" y2="100"/>
+      <!-- NFC arcs — blue -->
       <path id="n1" class="narc" d="M 213 55 A  8  8 0 0 1 213 73"/>
       <path id="n2" class="narc" d="M 219 50 A 14 14 0 0 1 219 78"/>
       <path id="n3" class="narc" d="M 225 45 A 20 20 0 0 1 225 83"/>
     </g>
 
-    <!-- ═══ LAYER 3: POS FRONT (drawn over card — creates "card enters slot" illusion) ═══ -->
+    <!-- ═══ LAYER 3: POS FRONT (sobrepõe cartão — efeito de entrar no slot) ═══ -->
 
-    <!-- screen -->
-    <rect class="sm" x="109" y="144" width="122" height="74" rx="8"/>
-    <!-- screen lines (animated) -->
+    <!-- screen border — gray -->
+    <rect class="sgm" x="109" y="144" width="122" height="74" rx="8"/>
+    <!-- screen lines — blue (animated) -->
     <line id="sl1" class="sline" x1="121" y1="166" x2="209" y2="166"/>
     <line id="sl2" class="sline" x1="121" y1="181" x2="195" y2="181"/>
     <line id="sl3" class="sline" x1="121" y1="196" x2="203" y2="196"/>
-    <!-- status dot -->
+    <!-- status dot — blue -->
     <circle id="dot" cx="218" cy="166" r="4"/>
 
-    <!-- card slot -->
-    <rect class="s" x="109" y="230" width="122" height="11" rx="5"/>
-    <!-- scan line inside slot -->
+    <!-- card slot — blue -->
+    <rect class="sb" x="109" y="230" width="122" height="11" rx="5"/>
+    <!-- scan line — blue -->
     <line id="scan-line" x1="113" y1="235" x2="113" y2="235"/>
 
-    <!-- keypad: 3 cols × 4 rows, all inside POS body (bottom=369 < 420) -->
+    <!-- keypad — gray (3 cols × 4 rows, last bottom=369 < 420 ✓) -->
     <!-- row 1 -->
-    <rect class="sm" x="117" y="252" width="30" height="24" rx="5"/>
-    <rect class="sm" x="155" y="252" width="30" height="24" rx="5"/>
-    <rect class="sm" x="193" y="252" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="117" y="252" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="155" y="252" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="193" y="252" width="30" height="24" rx="5"/>
     <!-- row 2 -->
-    <rect class="sm" x="117" y="283" width="30" height="24" rx="5"/>
-    <rect class="sm" x="155" y="283" width="30" height="24" rx="5"/>
-    <rect class="sm" x="193" y="283" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="117" y="283" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="155" y="283" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="193" y="283" width="30" height="24" rx="5"/>
     <!-- row 3 -->
-    <rect class="sm" x="117" y="314" width="30" height="24" rx="5"/>
-    <rect class="sm" x="155" y="314" width="30" height="24" rx="5"/>
-    <rect class="sm" x="193" y="314" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="117" y="314" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="155" y="314" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="193" y="314" width="30" height="24" rx="5"/>
     <!-- row 4: C | 0 | OK -->
-    <rect class="sm"  x="117" y="345" width="30" height="24" rx="5"/>
-    <rect class="sm"  x="155" y="345" width="30" height="24" rx="5"/>
-    <rect id="ok-key" class="sm" x="193" y="345" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="117" y="345" width="30" height="24" rx="5"/>
+    <rect class="sgm" x="155" y="345" width="30" height="24" rx="5"/>
+    <rect id="ok-key" class="sgm" x="193" y="345" width="30" height="24" rx="5"/>
 
-    <!-- ═══ RIPPLES (success) ═══ -->
+    <!-- ═══ RIPPLES — blue ═══ -->
     <circle class="ripple" id="r1" cx="170" cy="235" r="22"/>
     <circle class="ripple" id="r2" cx="170" cy="235" r="22"/>
     <circle class="ripple" id="r3" cx="170" cy="235" r="22"/>
 
-    <!-- ═══ CHECKMARK (success) ═══ -->
+    <!-- ═══ CHECKMARK — blue ═══ -->
     <g id="chk-circle">
-      <circle class="s" cx="170" cy="330" r="28" stroke="#7aa0b8"/>
+      <circle class="sb" cx="170" cy="330" r="28"/>
       <polyline id="chk-path" points="158,330 166,338 182,320"
-        fill="none" stroke="#7aa0b8" stroke-width="3"
+        fill="none" stroke="#0070e0" stroke-width="3"
         stroke-linecap="round" stroke-linejoin="round"/>
     </g>
 
@@ -239,9 +243,9 @@ async function scanSlot() {
 /* ── OK key highlight ── */
 async function flashOK() {
   await okKey.animate([
-    { stroke: '#9ab3c7' },
-    { stroke: '#5b8faa' },
-    { stroke: '#9ab3c7' }
+    { stroke: '#bdc4c9' },
+    { stroke: '#0070e0' },
+    { stroke: '#bdc4c9' }
   ], { duration: 600, easing: 'ease-in-out', fill: 'forwards' }).finished;
 }
 
