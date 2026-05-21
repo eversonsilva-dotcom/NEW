@@ -391,7 +391,7 @@ async function runScene1() {
   const u = $('bubble-user');
   const r = $('bubble-reply');
   hide(u); hide(r);
-  show($('s1'));
+  $('s1').classList.add('active');
 
   await wait(900);
   show(u);
@@ -416,7 +416,7 @@ async function runScene2() {
     $('rt-act-'+t.id).classList.remove('show');
   });
 
-  show($('s2'));
+  $('s2').classList.add('active');
   await wait(600);
 
   // 1. automate link appears
