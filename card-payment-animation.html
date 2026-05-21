@@ -13,301 +13,160 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #eef2f7;
+      background: #edf2f7;
       font-family: -apple-system, 'Segoe UI', sans-serif;
     }
 
-    .scene {
-      position: relative;
-      width: 340px;
-      height: 420px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .scene svg { overflow: visible; display: block; }
 
-    /* ── SVG canvas ── */
-    .scene svg {
-      overflow: visible;
-    }
+    /* ── shared SVG classes ── */
+    .s  { fill: none; stroke: #9ab3c7; stroke-width: 3;   stroke-linecap: round; stroke-linejoin: round; }
+    .sm { fill: none; stroke: #9ab3c7; stroke-width: 2;   stroke-linecap: round; stroke-linejoin: round; }
+    .sx { fill: none; stroke: #b8cdd9; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* shared stroke style */
-    .outline {
+    /* ── screen lines draw-on animation ── */
+    .sline {
+      stroke: #b8cdd9; stroke-width: 2.5; stroke-linecap: round;
       fill: none;
-      stroke: #9ab3c7;
-      stroke-width: 3;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+      transition: stroke-dashoffset 0s;
     }
-    .outline-thin {
-      fill: none;
-      stroke: #9ab3c7;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .sline.draw { transition: stroke-dashoffset 0.4s cubic-bezier(0.4,0,0.2,1); stroke-dashoffset: 0; }
+
+    /* ── NFC arcs ── */
+    .narc {
+      fill: none; stroke: #9ab3c7; stroke-width: 2; stroke-linecap: round;
+      stroke-dasharray: 18; stroke-dashoffset: 18;
+      transition: stroke-dashoffset 0s, opacity 0s;
+      opacity: 0;
     }
-    .outline-xs {
-      fill: none;
-      stroke: #b8cdd9;
-      stroke-width: 1.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .fill-white {
-      fill: none;
-      stroke: #9ab3c7;
-      stroke-width: 3;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .fill-light {
-      fill: none;
-      stroke: #9ab3c7;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .narc.draw {
+      transition: stroke-dashoffset 0.3s ease-out, opacity 0.2s ease-out;
+      stroke-dashoffset: 0; opacity: 1;
     }
 
-    /* ── POS body: static ── */
-    #pos-body { }
-
-    /* ── Card animation ── */
-    #card-group {
-      animation: cardMove 5s cubic-bezier(.4,0,.2,1) infinite;
-      transform-origin: 170px 120px;
-    }
-    @keyframes cardMove {
-      /* start above slot */
-      0%          { transform: translateY(-90px); opacity: 0; }
-      8%          { transform: translateY(-90px); opacity: 1; }
-      /* slide into slot */
-      22%,48%     { transform: translateY(0px);   opacity: 1; }
-      /* success flash — card stays */
-      58%,72%     { transform: translateY(0px);   opacity: 1; }
-      /* slide out */
-      88%         { transform: translateY(-90px); opacity: 1; }
-      95%,100%    { transform: translateY(-90px); opacity: 0; }
+    /* ── scan line ── */
+    #scan-line {
+      stroke: #7aa0b8; stroke-width: 2; stroke-linecap: round;
+      opacity: 0;
     }
 
-    /* ── Slot glow (scan line) ── */
-    #slot-scan {
-      animation: scanMove 5s ease-in-out infinite;
-    }
-    @keyframes scanMove {
-      0%,15%   { transform: translateX(0);    opacity: 0; }
-      22%      { transform: translateX(0);    opacity: 1; }
-      48%      { transform: translateX(80px); opacity: 1; }
-      55%,100% { transform: translateX(80px); opacity: 0; }
+    /* ── checkmark ── */
+    #chk-circle { opacity: 0; transform-origin: 170px 330px; }
+    #chk-path {
+      fill: none; stroke: #7aa0b8; stroke-width: 3;
+      stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 30; stroke-dashoffset: 30;
     }
 
-    /* ── Screen text lines ── */
-    .screen-line {
-      animation: lineAppear 5s ease-in-out infinite;
-      stroke-dasharray: 60;
-      stroke-dashoffset: 60;
-    }
-    .screen-line:nth-child(1) { animation-delay: 0s; }
-    .screen-line:nth-child(2) { animation-delay: .15s; }
-    .screen-line:nth-child(3) { animation-delay: .3s; }
-    @keyframes lineAppear {
-      0%,15%   { stroke-dashoffset: 60; opacity: 0; }
-      25%,70%  { stroke-dashoffset: 0;  opacity: 1; }
-      80%,100% { stroke-dashoffset: 0;  opacity: 0; }
-    }
+    /* ── status dot ── */
+    #dot { fill: #9ab3c7; }
 
-    /* ── Checkmark ── */
-    #check-circle {
-      animation: checkPop 5s ease-in-out infinite;
-      transform-origin: 170px 285px;
-    }
-    @keyframes checkPop {
-      0%,52%   { transform: scale(0); opacity: 0; }
-      62%      { transform: scale(1.1); opacity: 1; }
-      67%,78%  { transform: scale(1);   opacity: 1; }
-      88%,100% { transform: scale(0);   opacity: 0; }
-    }
-    #check-path {
-      stroke-dasharray: 32;
-      stroke-dashoffset: 32;
-      animation: drawCheck 5s ease-in-out infinite;
-    }
-    @keyframes drawCheck {
-      0%,62%   { stroke-dashoffset: 32; }
-      72%,80%  { stroke-dashoffset: 0; }
-      88%,100% { stroke-dashoffset: 32; }
-    }
-
-    /* ── NFC arcs on card ── */
-    .nfc-arc {
-      stroke-dasharray: 20;
-      stroke-dashoffset: 20;
-      animation: nfcDraw 5s ease-in-out infinite;
-    }
-    .nfc-arc:nth-child(1) { animation-delay: .4s; }
-    .nfc-arc:nth-child(2) { animation-delay: .55s; }
-    .nfc-arc:nth-child(3) { animation-delay: .7s; }
-    @keyframes nfcDraw {
-      0%,20%   { stroke-dashoffset: 20; opacity: 0; }
-      30%,50%  { stroke-dashoffset: 0;  opacity: 1; }
-      58%,100% { stroke-dashoffset: 0;  opacity: 0; }
-    }
-
-    .ripple:nth-child(1) { animation-delay: 0s; }
-    .ripple:nth-child(2) { animation-delay: .35s; }
-    .ripple:nth-child(3) { animation-delay: .7s; }
-    @keyframes rippleOut {
-      0%,52%   { transform: scale(0); opacity: 0; }
-      56%      { transform: scale(0); opacity: .7; }
-      75%,100% { transform: scale(1.6); opacity: 0; }
-    }
-
-    /* ── Keypad keys blink ── */
-    .key-ok {
-      animation: keyBlink 5s ease-in-out infinite;
-    }
-    @keyframes keyBlink {
-      0%,48%   { stroke: #9ab3c7; }
-      55%,65%  { stroke: #5b8faa; }
-      70%,100% { stroke: #9ab3c7; }
-    }
-
-    /* ── status dot blink ── */
-    #status-dot {
-      animation: dotBlink 1s ease-in-out infinite;
-      fill: #9ab3c7;
-    }
-    @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:.25} }
-
-    /* ── Ripple rings ── */
+    /* ── ripples ── */
     .ripple {
-      transform-origin: 170px 285px;
-      animation: rippleOut 5s ease-out infinite;
-      fill: none;
-      stroke: #9ab3c7;
-      stroke-width: 1.5;
+      fill: none; stroke: #9ab3c7; stroke-width: 1.5;
+      transform-origin: 170px 330px;
+      opacity: 0;
     }
 
     /* ── label ── */
     .label {
-      margin-top: 28px;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: .5px;
-      color: #9ab3c7;
-      text-transform: uppercase;
-      transition: opacity .4s;
+      margin-top: 24px;
+      font-size: 12px; font-weight: 500; letter-spacing: .8px;
+      color: #9ab3c7; text-transform: uppercase;
+      transition: opacity .35s ease;
     }
   </style>
 </head>
 <body>
-
 <div class="scene">
-  <svg width="340" height="420" viewBox="0 0 340 420">
+  <!--
+    SVG layout (340 × 460):
+    POS body  : x=95  y=130 w=150 h=290 → bottom=420
+    Screen    : x=109 y=144 w=122 h=74
+    Slot      : x=109 y=230 w=122 h=11
+    Keypad cols: x=117,155,193  key-w=30  gap=8
+    Keypad rows: y=252,283,314,345  key-h=24  gap=7  → last bottom=369 < 420 ✓
+    Card      : x=109 y=30  w=122 h=78  → in-slot translateY≈+128
+  -->
+  <svg id="svg" width="340" height="460" viewBox="0 0 340 460">
 
-    <!-- ══════════════════════════════════
-         POS TERMINAL (static outline)
-    ══════════════════════════════════ -->
+    <!-- ═══ LAYER 1: POS BACK (behind card) ═══ -->
+    <rect class="s" x="95" y="130" width="150" height="290" rx="22"/>
 
-    <!-- body -->
-    <rect id="pos-body" class="fill-white" x="105" y="160" width="130" height="220" rx="18" ry="18"/>
-
-    <!-- screen area -->
-    <rect class="fill-light" x="118" y="174" width="104" height="70" rx="8" ry="8"/>
-
-    <!-- screen text lines (animated draw) -->
-    <g class="outline-thin">
-      <line class="screen-line" x1="128" y1="195" x2="188" y2="195"/>
-      <line class="screen-line" x1="128" y1="208" x2="178" y2="208"/>
-      <line class="screen-line" x1="128" y1="221" x2="195" y2="221"/>
+    <!-- ═══ LAYER 2: CARD (animated over POS back, under POS front) ═══ -->
+    <g id="card-group" style="opacity:0">
+      <!-- card body -->
+      <rect class="s" x="109" y="30" width="122" height="78" rx="10"/>
+      <!-- chip -->
+      <rect class="sm" x="122" y="46" width="22" height="17" rx="3"/>
+      <line class="sx" x1="133" y1="46" x2="133" y2="63"/>
+      <line class="sx" x1="122" y1="54" x2="144" y2="54"/>
+      <!-- masked number dots -->
+      <circle cx="122" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="130" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="138" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="146" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="157" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="165" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="173" cy="84" r="2.5" fill="#b8cdd9"/>
+      <circle cx="181" cy="84" r="2.5" fill="#b8cdd9"/>
+      <!-- last 4 digits -->
+      <text x="191" y="88" font-size="8" fill="#b8cdd9" font-family="monospace" letter-spacing="1">4242</text>
+      <!-- name underline -->
+      <line class="sx" x1="122" y1="100" x2="175" y2="100"/>
+      <!-- NFC arcs (right side of card) -->
+      <path id="n1" class="narc" d="M 213 55 A  8  8 0 0 1 213 73"/>
+      <path id="n2" class="narc" d="M 219 50 A 14 14 0 0 1 219 78"/>
+      <path id="n3" class="narc" d="M 225 45 A 20 20 0 0 1 225 83"/>
     </g>
 
+    <!-- ═══ LAYER 3: POS FRONT (drawn over card — creates "card enters slot" illusion) ═══ -->
+
+    <!-- screen -->
+    <rect class="sm" x="109" y="144" width="122" height="74" rx="8"/>
+    <!-- screen lines (animated) -->
+    <line id="sl1" class="sline" x1="121" y1="166" x2="209" y2="166"/>
+    <line id="sl2" class="sline" x1="121" y1="181" x2="195" y2="181"/>
+    <line id="sl3" class="sline" x1="121" y1="196" x2="203" y2="196"/>
     <!-- status dot -->
-    <circle id="status-dot" cx="209" cy="195" r="4"/>
+    <circle id="dot" cx="218" cy="166" r="4"/>
 
     <!-- card slot -->
-    <rect class="outline" x="118" y="255" width="104" height="10" rx="4" ry="4"/>
+    <rect class="s" x="109" y="230" width="122" height="11" rx="5"/>
+    <!-- scan line inside slot -->
+    <line id="scan-line" x1="113" y1="235" x2="113" y2="235"/>
 
-    <!-- slot scan line -->
-    <line id="slot-scan" class="outline-thin" x1="122" y1="260" x2="122" y2="260"
-          stroke="#7aa0b8" stroke-width="2" stroke-linecap="round"/>
-
-    <!-- keypad grid
-         POS body: x=105 w=130 → inner x: 118..222 (13px padding each side)
-         3 keys w=28, gap=10 → 118 | 156 | 194, right edge=222 ✓
-         4 rows h=22, gap=8 → y: 274, 304, 334, 364
-    -->
+    <!-- keypad: 3 cols × 4 rows, all inside POS body (bottom=369 < 420) -->
     <!-- row 1 -->
-    <rect class="outline-thin" x="118" y="274" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="156" y="274" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="194" y="274" width="28" height="22" rx="5"/>
+    <rect class="sm" x="117" y="252" width="30" height="24" rx="5"/>
+    <rect class="sm" x="155" y="252" width="30" height="24" rx="5"/>
+    <rect class="sm" x="193" y="252" width="30" height="24" rx="5"/>
     <!-- row 2 -->
-    <rect class="outline-thin" x="118" y="304" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="156" y="304" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="194" y="304" width="28" height="22" rx="5"/>
+    <rect class="sm" x="117" y="283" width="30" height="24" rx="5"/>
+    <rect class="sm" x="155" y="283" width="30" height="24" rx="5"/>
+    <rect class="sm" x="193" y="283" width="30" height="24" rx="5"/>
     <!-- row 3 -->
-    <rect class="outline-thin" x="118" y="334" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="156" y="334" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="194" y="334" width="28" height="22" rx="5"/>
+    <rect class="sm" x="117" y="314" width="30" height="24" rx="5"/>
+    <rect class="sm" x="155" y="314" width="30" height="24" rx="5"/>
+    <rect class="sm" x="193" y="314" width="30" height="24" rx="5"/>
     <!-- row 4: C | 0 | OK -->
-    <rect class="outline-thin" x="118" y="364" width="28" height="22" rx="5"/>
-    <rect class="outline-thin" x="156" y="364" width="28" height="22" rx="5"/>
-    <rect class="key-ok outline-thin" x="194" y="364" width="28" height="22" rx="5"/>
+    <rect class="sm"  x="117" y="345" width="30" height="24" rx="5"/>
+    <rect class="sm"  x="155" y="345" width="30" height="24" rx="5"/>
+    <rect id="ok-key" class="sm" x="193" y="345" width="30" height="24" rx="5"/>
 
+    <!-- ═══ RIPPLES (success) ═══ -->
+    <circle class="ripple" id="r1" cx="170" cy="235" r="22"/>
+    <circle class="ripple" id="r2" cx="170" cy="235" r="22"/>
+    <circle class="ripple" id="r3" cx="170" cy="235" r="22"/>
 
-    <!-- ══════════════════════════════════
-         CREDIT CARD (animated)
-    ══════════════════════════════════ -->
-    <g id="card-group">
-      <!-- card body -->
-      <rect class="fill-white" x="110" y="72" width="120" height="76" rx="10" ry="10"/>
-
-      <!-- chip -->
-      <rect class="outline-thin" x="122" y="88" width="20" height="16" rx="3"/>
-      <line class="outline-xs" x1="132" y1="88" x2="132" y2="104"/>
-      <line class="outline-xs" x1="122" y1="96" x2="142" y2="96"/>
-
-      <!-- card number dots -->
-      <circle class="outline-xs" cx="122" cy="120" r="2" fill="#b8cdd9"/>
-      <circle class="outline-xs" cx="129" cy="120" r="2" fill="#b8cdd9"/>
-      <circle class="outline-xs" cx="136" cy="120" r="2" fill="#b8cdd9"/>
-      <circle class="outline-xs" cx="143" cy="120" r="2" fill="#b8cdd9"/>
-      <line class="outline-xs" x1="148" y1="120" x2="150" y2="120"/>
-      <circle class="outline-xs" cx="155" cy="120" r="2" fill="#b8cdd9"/>
-      <circle class="outline-xs" cx="162" cy="120" r="2" fill="#b8cdd9"/>
-      <circle class="outline-xs" cx="169" cy="120" r="2" fill="#b8cdd9"/>
-      <circle class="outline-xs" cx="176" cy="120" r="2" fill="#b8cdd9"/>
-      <line class="outline-xs" x1="181" y1="120" x2="183" y2="120"/>
-      <text x="188" y="124" font-size="7" fill="#b8cdd9" font-family="monospace" letter-spacing="1">4242</text>
-
-      <!-- name line -->
-      <line class="outline-xs" x1="122" y1="134" x2="168" y2="134"/>
-
-      <!-- NFC arcs -->
-      <g fill="none" stroke="#9ab3c7" stroke-width="1.8" stroke-linecap="round">
-        <path class="nfc-arc" d="M 204 94 A 8 8 0 0 1 204 112"/>
-        <path class="nfc-arc" d="M 210 90 A 14 14 0 0 1 210 116"/>
-        <path class="nfc-arc" d="M 216 86 A 20 20 0 0 1 216 120"/>
-      </g>
-    </g>
-
-
-    <!-- ══════════════════════════════════
-         RIPPLE RINGS (on success)
-    ══════════════════════════════════ -->
-    <circle class="ripple" cx="170" cy="285" r="30"/>
-    <circle class="ripple" cx="170" cy="285" r="30"/>
-    <circle class="ripple" cx="170" cy="285" r="30"/>
-
-
-    <!-- ══════════════════════════════════
-         SUCCESS CHECKMARK
-    ══════════════════════════════════ -->
-    <g id="check-circle">
-      <circle class="outline" cx="170" cy="285" r="26" stroke="#7aa0b8"/>
-      <polyline id="check-path"
+    <!-- ═══ CHECKMARK (success) ═══ -->
+    <g id="chk-circle">
+      <circle class="s" cx="170" cy="330" r="28" stroke="#7aa0b8"/>
+      <polyline id="chk-path" points="158,330 166,338 182,320"
         fill="none" stroke="#7aa0b8" stroke-width="3"
-        stroke-linecap="round" stroke-linejoin="round"
-        points="158,285 166,293 182,275"/>
+        stroke-linecap="round" stroke-linejoin="round"/>
     </g>
 
   </svg>
@@ -316,30 +175,164 @@
 <div class="label" id="label">Insira o cartão</div>
 
 <script>
-  const labels = ['Insira o cartão', 'Processando…', 'Pagamento aprovado!'];
-  const timings = [0, 2200, 3200]; // ms into the 5000ms cycle
-  const label = document.getElementById('label');
+/* ── helpers ── */
+const el  = id => document.getElementById(id);
+const css = (node, obj) => Object.assign(node.style, obj);
+const wait = ms => new Promise(r => setTimeout(r, ms));
 
-  function cycleLabel() {
-    const cycle = 5000;
-    const now = performance.now() % cycle;
+const card     = el('card-group');
+const dot      = el('dot');
+const okKey    = el('ok-key');
+const scanLine = el('scan-line');
+const chkG     = el('chk-circle');
+const chkPath  = el('chk-path');
+const label    = el('label');
+const [r1,r2,r3] = [el('r1'),el('r2'),el('r3')];
+const nfcArcs  = [el('n1'),el('n2'),el('n3')];
+const sLines   = [el('sl1'),el('sl2'),el('sl3')];
 
-    // find which label we should be showing
-    let idx = 0;
-    for (let i = 0; i < timings.length; i++) {
-      if (now >= timings[i]) idx = i;
-    }
+/* ── animate element with Web Animations API ── */
+function anim(node, frames, opts) {
+  return node.animate(frames, { fill: 'forwards', composite: 'replace', ...opts }).finished;
+}
 
-    if (label.textContent !== labels[idx]) {
-      label.style.opacity = '0';
-      setTimeout(() => {
-        label.textContent = labels[idx];
-        label.style.opacity = '1';
-      }, 200);
-    }
-    requestAnimationFrame(cycleLabel);
+/* ── status dot blink (runs forever) ── */
+dot.animate([{opacity:1},{opacity:.2},{opacity:1}], { duration: 1200, iterations: Infinity });
+
+/* ── screen lines draw-on on load ── */
+async function drawScreenLines(on) {
+  for (const ln of sLines) {
+    ln.classList.toggle('draw', on);
+    await wait(120);
   }
-  requestAnimationFrame(cycleLabel);
+}
+
+/* ── NFC arcs ── */
+async function showNFC(on) {
+  for (const a of nfcArcs) {
+    a.classList.toggle('draw', on);
+    if (on) await wait(100);
+  }
+}
+
+/* ── ripple ── */
+function ripple(node, delay) {
+  wait(delay).then(() =>
+    node.animate([
+      { transform: 'scale(0)', opacity: .6 },
+      { transform: 'scale(2.4)', opacity: 0 }
+    ], { duration: 800, easing: 'cubic-bezier(0,0,.4,1)', fill: 'forwards' })
+  );
+}
+
+/* ── scan line sweep ── */
+async function scanSlot() {
+  css(scanLine, { opacity: '1' });
+  await scanLine.animate([
+    { transform: 'translateX(0)' },
+    { transform: 'translateX(110px)' }
+  ], { duration: 600, easing: 'cubic-bezier(0.4,0,0.6,1)', fill: 'forwards' }).finished;
+  css(scanLine, { opacity: '0' });
+  scanLine.getAnimations().forEach(a => a.cancel());
+}
+
+/* ── OK key highlight ── */
+async function flashOK() {
+  await okKey.animate([
+    { stroke: '#9ab3c7' },
+    { stroke: '#5b8faa' },
+    { stroke: '#9ab3c7' }
+  ], { duration: 600, easing: 'ease-in-out', fill: 'forwards' }).finished;
+}
+
+/* ── checkmark draw-on ── */
+async function showCheck(on) {
+  if (on) {
+    await anim(chkG, [
+      { opacity: 0, transform: 'scale(0.5)' },
+      { opacity: 1, transform: 'scale(1.08)', offset: 0.7 },
+      { opacity: 1, transform: 'scale(1)' }
+    ], { duration: 420, easing: 'cubic-bezier(0.34,1.36,0.64,1)' });
+
+    await anim(chkPath, [
+      { strokeDashoffset: 30 },
+      { strokeDashoffset: 0 }
+    ], { duration: 340, easing: 'cubic-bezier(0.4,0,0.2,1)' });
+  } else {
+    await anim(chkG, [
+      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.8)' }
+    ], { duration: 260, easing: 'ease-in' });
+  }
+}
+
+/* ── label update ── */
+async function setLabel(text) {
+  css(label, { opacity: '0' });
+  await wait(260);
+  label.textContent = text;
+  css(label, { opacity: '1' });
+}
+
+/* ── main loop ── */
+async function run() {
+  // reset
+  css(card, { opacity: '0', transform: 'translateY(-130px)' });
+  chkG.getAnimations().forEach(a => a.cancel()); css(chkG, { opacity: '0' });
+  chkPath.getAnimations().forEach(a => a.cancel()); css(chkPath, { strokeDashoffset: '30' });
+  for (const ln of sLines) ln.classList.remove('draw');
+  await showNFC(false);
+  css(scanLine, { opacity: '0' });
+  scanLine.getAnimations().forEach(a => a.cancel()); css(scanLine, { transform: '' });
+  for (const r of [r1,r2,r3]) r.getAnimations().forEach(a => a.cancel());
+
+  await wait(300);
+
+  // 1. screen lines appear
+  setLabel('Insira o cartão');
+  drawScreenLines(true);
+  await wait(300);
+
+  // 2. card slides in — gravity ease-in, soft settle at end
+  css(card, { opacity: '1' });
+  await anim(card, [
+    { transform: 'translateY(-130px)', opacity: 0 },
+    { transform: 'translateY(-130px)', opacity: 1,   offset: 0.04 },
+    { transform: 'translateY(4px)',    opacity: 1,   offset: 0.88 },
+    { transform: 'translateY(0px)',    opacity: 1 }
+  ], { duration: 750, easing: 'cubic-bezier(0.4, 0, 0.6, 1)' });
+
+  // 3. scan + NFC
+  await wait(180);
+  setLabel('Processando…');
+  await Promise.all([scanSlot(), showNFC(true)]);
+  await wait(200);
+
+  // 4. OK key flash + ripples
+  flashOK();
+  ripple(r1, 0); ripple(r2, 220); ripple(r3, 440);
+  await wait(300);
+
+  // 5. checkmark
+  await showCheck(true);
+  setLabel('Pagamento aprovado!');
+  await wait(1100);
+
+  // 6. card slides out — ease-in-out pull
+  await anim(card, [
+    { transform: 'translateY(0px)',    opacity: 1 },
+    { transform: 'translateY(-10px)',  opacity: 1,   offset: 0.1 },
+    { transform: 'translateY(-130px)', opacity: 0 }
+  ], { duration: 560, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
+
+  // 7. check fades
+  await showCheck(false);
+
+  await wait(500);
+  run();
+}
+
+run();
 </script>
 </body>
 </html>
