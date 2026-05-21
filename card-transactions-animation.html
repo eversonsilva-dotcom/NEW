@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Card Transactions – Stark Bank</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:#ede8e3;
+  font-family:-apple-system,'Segoe UI',sans-serif;
+  overflow:hidden;
+}
+
+/* ═══ SCENES ═══ */
+.scene{
+  position:absolute;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .55s cubic-bezier(.4,0,.2,1);
+}
+.scene.active{opacity:1;pointer-events:auto}
+
+/* ═══════════════════════════════
+   SCENE 1 — MOBILE CHAT
+═══════════════════════════════ */
+.phone{
+  width:272px;
+  background:#1a1a1a;
+  border-radius:50px;
+  padding:10px;
+  box-shadow:0 0 0 1px #333, 0 40px 80px rgba(0,0,0,.5);
+}
+.phone-screen{
+  background:#fff;
+  border-radius:42px;
+  overflow:hidden;
+  height:528px;
+  position:relative;
+  display:flex;flex-direction:column;
+}
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:118px;height:34px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+.status-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px 0;
+  font-size:14px;font-weight:600;
+  flex-shrink:0;
+  position:relative;z-index:5;
+}
+.status-icons{display:flex;gap:6px;align-items:center}
+.bar{background:#111;height:5px;border-radius:2px}
+.bar:nth-child(1){width:3px}
+.bar:nth-child(2){width:3px}
+.bar:nth-child(3){width:3px;height:3px}
+.bar:nth-child(4){width:3px;height:7px}
+.wifi{font-size:11px}
+.battery{width:22px;height:12px;border:2px solid #111;border-radius:3px;position:relative;margin-left:2px}
+.battery::after{content:'';position:absolute;right:-5px;top:2px;width:3px;height:6px;background:#111;border-radius:0 1px 1px 0}
+.battery::before{content:'';position:absolute;inset:1px;background:#111;border-radius:1px}
+
+.chat-header{
+  display:flex;flex-direction:column;align-items:center;
+  padding:8px 0 10px;
+  border-bottom:1px solid #f0f0f0;
+  flex-shrink:0;
+}
+.chat-back{
+  align-self:flex-start;
+  margin-left:18px;
+  font-size:20px;color:#0070e0;font-weight:300;
+  margin-bottom:-28px;
+}
+.chat-avatar{
+  width:52px;height:52px;border-radius:50%;
+  background:#0070e0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:#fff;
+}
+.chat-name{font-size:13px;font-weight:500;color:#111;margin-top:4px}
+.chat-name span{color:#0070e0}
+
+.messages{
+  flex:1;overflow:hidden;
+  padding:12px 14px;
+  display:flex;flex-direction:column;
+  gap:10px;
+}
+.receipt-placeholder{
+  width:100%;height:72px;
+  background:linear-gradient(135deg,#c8b89a,#a89278);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:rgba(255,255,255,.7);
+  letter-spacing:.5px;
+  flex-shrink:0;
+}
+.bubble{
+  max-width:82%;
+  padding:10px 14px;
+  border-radius:18px;
+  font-size:13px;line-height:1.45;
+  color:#111;
+}
+.bubble.bot{
+  background:#f0f0f0;
+  border-bottom-left-radius:4px;
+  align-self:flex-start;
+}
+.bubble.user{
+  background:#0070e0;
+  color:#fff;
+  border-bottom-right-radius:4px;
+  align-self:flex-end;
+  opacity:0;transform:scale(.8) translateY(8px);
+  transition:opacity .3s ease, transform .3s cubic-bezier(.34,1.4,.64,1);
+}
+.bubble.user.show{opacity:1;transform:scale(1) translateY(0)}
+.bubble.reply{
+  background:#f0f0f0;
+  border-bottom-left-radius:4px;
+  align-self:flex-start;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .35s ease, transform .35s cubic-bezier(.4,0,.2,1);
+}
+.bubble.reply.show{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════
+   SCENE 2 — DESKTOP TABLE
+═══════════════════════════════ */
+.desktop-card{
+  width:760px;
+  background:#fff;
+  border-radius:20px;
+  padding:36px 36px 28px;
+  box-shadow:0 4px 32px rgba(0,0,0,.08);
+}
+.card-title{
+  font-size:26px;font-weight:700;color:#111;
+  margin-bottom:20px;
+}
+.automate-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:500;color:#0070e0;
+  margin-bottom:18px;cursor:default;
+  opacity:0;transform:translateY(-6px);
+  transition:opacity .35s ease,transform .35s ease;
+}
+.automate-link.show{opacity:1;transform:translateY(0)}
+.spark{font-size:14px;display:inline-block;animation:spinSpark 1.2s linear infinite}
+@keyframes spinSpark{to{transform:rotate(360deg)}}
+
+/* table */
+.tx-table{width:100%;border-collapse:collapse}
+.tx-table tr{border-bottom:1px solid #f0f0f0}
+.tx-table tr:last-child{border-bottom:none}
+.tx-table td{padding:11px 10px;vertical-align:middle;font-size:13.5px}
+
+.logo-cell{width:44px;padding-right:0}
+.tx-logo{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.tx-name{font-weight:600;color:#111;font-size:13.5px}
+.tx-cat-label{font-size:12px;color:#999;margin-top:1px}
+.tx-amount{color:#111;font-weight:500;font-size:13.5px;text-align:right}
+
+/* category + action cells */
+.cat-cell,.act-cell{min-width:140px}
+
+/* spinner */
+.spinner{
+  display:inline-flex;align-items:center;gap:6px;
+  color:#0070e0;font-size:13px;
+  opacity:0;
+  transition:opacity .25s;
+}
+.spinner.show{opacity:1}
+.spin-icon{font-size:14px;animation:spinSpark 1s linear infinite}
+
+/* resolved text */
+.resolved-text{
+  opacity:0;font-size:13px;color:#777;
+  transform:translateX(-4px);
+  transition:opacity .3s ease, transform .3s ease;
+}
+.resolved-text.show{opacity:1;transform:translateX(0)}
+.approve-text{color:#22a861;font-weight:500;cursor:default}
+.review-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:500;color:#555;
+  cursor:default;
+  border:1px solid #ddd;border-radius:6px;padding:3px 10px;
+  position:relative;
+}
+
+/* section headers */
+.section-hdr{
+  display:none;padding:14px 10px 8px;
+  font-size:12px;font-weight:600;
+}
+.section-hdr.review-hdr{color:#0070e0}
+.section-hdr.approve-hdr{color:#22a861}
+.section-hdr .spark-sm{font-size:12px;display:inline-block;animation:spinSpark 1.2s linear infinite;margin-right:4px}
+
+/* dropdown */
+.dropdown{
+  position:absolute;top:calc(100% + 4px);right:0;
+  background:#fff;border:1px solid #e8e8e8;
+  border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);
+  overflow:hidden;z-index:100;
+  min-width:150px;
+  opacity:0;transform:translateY(-6px) scale(.97);
+  transition:opacity .2s ease,transform .2s ease;
+  pointer-events:none;
+}
+.dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.dropdown-item{
+  padding:10px 14px;
+  font-size:13px;color:#333;
+  cursor:default;
+  transition:background .15s;
+}
+.dropdown-item:hover{background:#f5f5f5}
+.dropdown-item.active{background:#f0f0f0;font-weight:500}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ SCENE 1: MOBILE ═══ -->
+<div class="scene" id="s1">
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="dynamic-island"></div>
+
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <div style="display:flex;gap:2px;align-items:flex-end">
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:6px"></div>
+            <div class="bar" style="height:8px"></div>
+            <div class="bar" style="height:10px"></div>
+          </div>
+          <span class="wifi" style="font-size:14px">&#8859;</span>
+          <div class="battery"></div>
+        </div>
+      </div>
+
+      <div class="chat-header">
+        <div class="chat-back">‹</div>
+        <div class="chat-avatar">SB</div>
+        <div class="chat-name">Stark Bank <span>›</span></div>
+      </div>
+
+      <div class="messages">
+        <div class="receipt-placeholder">COMPROVANTE</div>
+
+        <div class="bubble bot">
+          Adicionado! Qual foi o motivo desta transação?<br><br>
+          1 para "Refeição com cliente na Carbone"<br>
+          2 para "Jantar de negócios – NYC"<br><br>
+          Ou envie seu próprio motivo
+        </div>
+
+        <div class="bubble user" id="bubble-user">2</div>
+
+        <div class="bubble reply" id="bubble-reply">
+          ✅ Motivo adicionado! Sua transação de R$&nbsp;237,85 na Carbone está completa!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 2: DESKTOP ═══ -->
+<div class="scene" id="s2">
+  <div class="desktop-card">
+    <div class="card-title">Transações do Cartão</div>
+
+    <div class="automate-link" id="automate-link">
+      <span class="spark">✳</span> Categorizar automaticamente
+    </div>
+
+    <table class="tx-table" id="tx-table">
+      <tbody id="tx-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+/* ── data ── */
+const TXS = [
+  { id:'carbone',   logo:'CB', color:'#6b7280', name:'Carbone',          sub:'Restaurante',  amount:'R$ 237,85',    center:'Acme US – New York',       action:'approve' },
+  { id:'marriott',  logo:'M',  color:'#111',    name:'Marriott',          sub:'Hospedagem',   amount:'R$ 2.203,31',  center:'Acme US – San Francisco',   action:'review'  },
+  { id:'eurostar',  logo:'E',  color:'#1a3a6e', name:'Eurostar',          sub:'Transporte',   amount:'€ 248,56',     center:'Acme França – Paris',       action:'approve' },
+  { id:'seven',     logo:'7',  color:'#16a34a', name:'7-Eleven',          sub:'Conveniência', amount:'¥ 1.031',      center:'Acme Japão – Tokyo',        action:'approve' },
+  { id:'swiggy',    logo:'SW', color:'#ea580c', name:'Swiggy',            sub:'Delivery',     amount:'₹ 425',        center:'Acme Índia – Delhi',        action:'approve' },
+  { id:'uber',      logo:'Ub', color:'#111',    name:'Uber',              sub:'Transporte',   amount:'CA$ 52,00',    center:'Acme Canadá – Toronto',     action:'approve' },
+  { id:'ba',        logo:'BA', color:'#dc2626', name:'British Airways',   sub:'Voos',         amount:'£ 348,95',     center:'Acme UK – Londres',         action:'approve' },
+];
+
+/* ── helpers ── */
+const $  = id => document.getElementById(id);
+const el = (tag,cls,html) => { const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const show = node => node.classList.add('show');
+const hide = node => node.classList.remove('show');
+
+/* ── build table rows ── */
+function buildTable() {
+  const tbody = $('tx-body');
+  tbody.innerHTML = '';
+  TXS.forEach(t => {
+    const tr = el('tr');
+    tr.id = 'row-' + t.id;
+    tr.innerHTML = `
+      <td class="logo-cell"><div class="tx-logo" style="background:${t.color}">${t.logo}</div></td>
+      <td>
+        <div class="tx-name">${t.name}</div>
+        <div class="tx-cat-label">${t.sub}</div>
+      </td>
+      <td class="tx-amount">${t.amount}</td>
+      <td class="cat-cell" id="cat-${t.id}">
+        <span class="spinner" id="sp-cat-${t.id}"><span class="spin-icon">✳</span></span>
+        <span class="resolved-text" id="rt-cat-${t.id}">${t.center}</span>
+      </td>
+      <td class="act-cell" id="act-${t.id}">
+        <span class="spinner" id="sp-act-${t.id}"><span class="spin-icon">✳</span></span>
+        ${t.action === 'approve'
+          ? `<span class="resolved-text approve-text" id="rt-act-${t.id}">Aprovar</span>`
+          : `<span class="resolved-text" id="rt-act-${t.id}" style="position:relative">
+               <span class="review-btn" id="review-btn">
+                 Revisar <span id="chevron">▾</span>
+                 <div class="dropdown" id="dropdown">
+                   <div class="dropdown-item">Ver</div>
+                   <div class="dropdown-item">Solicitar alterações</div>
+                   <div class="dropdown-item active">Solicitar estorno</div>
+                 </div>
+               </span>
+             </span>`
+        }
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── section headers (inserted during reorganize) ── */
+function insertSectionHeaders() {
+  const tbody = $('tx-body');
+
+  const hdrReview = el('tr');
+  hdrReview.id = 'hdr-review';
+  hdrReview.innerHTML = `<td colspan="5" class="section-hdr review-hdr">
+    <span class="spark-sm">✳</span> Revisão recomendada
+  </td>`;
+
+  const hdrApprove = el('tr');
+  hdrApprove.id = 'hdr-approve';
+  hdrApprove.innerHTML = `<td colspan="5" class="section-hdr approve-hdr">
+    <span class="spark-sm">✳</span> Aprovação recomendada
+  </td>`;
+
+  // move marriott to top after review header
+  const marriottRow = $('row-marriott');
+  tbody.insertBefore(hdrReview, tbody.firstChild);
+  tbody.insertBefore(marriottRow, hdrReview.nextSibling);
+  hdrReview.querySelector('.section-hdr').style.display = 'table-cell';
+
+  // insert approve header before carbone (now first approve row)
+  const carboneRow = $('row-carbone');
+  tbody.insertBefore(hdrApprove, carboneRow);
+  hdrApprove.querySelector('.section-hdr').style.display = 'table-cell';
+}
+
+/* ═══════════════════════════
+   SCENE 1 animation
+═══════════════════════════ */
+async function runScene1() {
+  const u = $('bubble-user');
+  const r = $('bubble-reply');
+  hide(u); hide(r);
+  show($('s1'));
+
+  await wait(900);
+  show(u);
+  await wait(900);
+  show(r);
+  await wait(2200);
+}
+
+/* ═══════════════════════════
+   SCENE 2 animation
+═══════════════════════════ */
+async function runScene2() {
+  buildTable();
+  const autoLink = $('automate-link');
+  hide(autoLink);
+
+  // hide all spinners and resolved texts initially
+  TXS.forEach(t => {
+    $('sp-cat-'+t.id).classList.remove('show');
+    $('sp-act-'+t.id).classList.remove('show');
+    $('rt-cat-'+t.id).classList.remove('show');
+    $('rt-act-'+t.id).classList.remove('show');
+  });
+
+  show($('s2'));
+  await wait(600);
+
+  // 1. automate link appears
+  show(autoLink);
+  await wait(700);
+
+  // 2. spinners appear staggered
+  for (let i = 0; i < TXS.length; i++) {
+    const t = TXS[i];
+    show($('sp-cat-'+t.id));
+    show($('sp-act-'+t.id));
+    await wait(70);
+  }
+  await wait(1100);
+
+  // 3. categories resolve row by row
+  for (let i = 0; i < TXS.length; i++) {
+    const t = TXS[i];
+    hide($('sp-cat-'+t.id));
+    show($('rt-cat-'+t.id));
+    await wait(160);
+  }
+  await wait(500);
+
+  // 4. action column resolves row by row
+  for (let i = 0; i < TXS.length; i++) {
+    const t = TXS[i];
+    hide($('sp-act-'+t.id));
+    show($('rt-act-'+t.id));
+    await wait(140);
+  }
+  await wait(900);
+
+  // 5. reorganize: insert section headers, animate marriott moving up
+  insertSectionHeaders();
+  await wait(1000);
+
+  // 6. dropdown opens on Marriott review button
+  const dd = $('dropdown');
+  const chevron = $('chevron');
+  if (dd && chevron) {
+    dd.classList.add('open');
+    chevron.textContent = '▴';
+    await wait(1600);
+    dd.classList.remove('open');
+    chevron.textContent = '▾';
+  }
+  await wait(600);
+}
+
+/* ═══════════════════════════
+   MAIN LOOP
+═══════════════════════════ */
+async function loop() {
+  // scene 1
+  $('s2').classList.remove('active');
+  await runScene1();
+
+  // transition
+  $('s1').classList.remove('active');
+  await wait(200);
+  await runScene2();
+
+  await wait(800);
+
+  // transition back
+  $('s2').classList.remove('active');
+  await wait(300);
+
+  loop();
+}
+
+loop();
+</script>
+</body>
+</html>
